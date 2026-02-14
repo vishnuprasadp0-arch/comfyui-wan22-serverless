@@ -1,28 +1,36 @@
-# clean base image containing only comfyui, comfy-cli and comfyui-manager
+# Start from RunPod worker-comfyui base image
+# Replace <version> with the latest release from https://github.com/runpod-workers/worker-comfyui/releases
 FROM runpod/worker-comfyui:5.5.1-base
 
-# install custom nodes into comfyui (first node with --mode remote to fetch updated cache)
-RUN comfy node install --exit-on-fail comfyui_essentials --mode remote
+# Install required custom nodes
+RUN comfy-node-install ComfyUI-VideoHelperSuite \
+    && comfy-node-install https://github.com/AIFSH/ComfyUI-Wan \
+    && comfy-node-install rgthree-comfy \
+    && comfy-node-install ComfyUI_essentials
 
-# The following unknown_registry custom nodes could not be automatically resolved because no aux_id (GitHub repo) was provided:
-# Could not resolve unknown_registry node: ModelSamplingSD3 - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: ModelSamplingSD3 - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: INTConstant - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: INTConstant - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: Seed (rgthree) - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: WanImageToVideo - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: INTConstant - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: wanBlockSwap - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: wanBlockSwap - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: VHS_VideoCombine - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: INTConstant - no aux_id provided, skipping installation
-# Could not resolve unknown_registry node: VAEDecodeTiled - no aux_id provided, skipping installation
+# Download Wan 2.2 UNET models (high and low lighting)
+RUN comfy model download \
+    --url https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors \
+    --relative-path models/unet \
+    --filename Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors
 
-# download models into comfyui
-RUN comfy model download --url https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors --relative-path models/vae --filename wan2.2_vae.safetensors
-# RUN # Could not find URL for Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors
-# RUN # Could not find URL for Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors
-# RUN # Could not find URL for nsfw_wan_umt5-xxl_fp8_scaled.safetensors
+RUN comfy model download \
+    --url https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors \
+    --relative-path models/unet \
+    --filename Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors
 
-# copy all input data (like images or videos) into comfyui (uncomment and adjust if needed)
+# Download CLIP model
+RUN comfy model download \
+    --url https://huggingface.co/NSFW-API/NSFW-Wan-UMT5-XXL/resolve/main/nsfw_wan_umt5-xxl_fp8_scaled.safetensors \
+    --relative-path models/clip \
+    --filename nsfw_wan_umt5-xxl_fp8_scaled.safetensors
+
+# Download VAE model
+RUN comfy model download \
+    --url https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors \
+    --relative-path models/vae \
+    --filename wan_2.1_vae.safetensors
+
+# Optional: Copy static input files if you have a default image
+# Uncomment and place your example.png in an input/ folder next to the Dockerfile
 # COPY input/ /comfyui/input/
