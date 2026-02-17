@@ -1,6 +1,6 @@
 # Start from RunPod worker-comfyui base image
 # Replace <version> with the latest release from https://github.com/runpod-workers/worker-comfyui/releases
-FROM runpod/worker-comfyui:5.5.1-base
+FROM runpod/worker-comfyui:latest
 
 # Install required custom nodes
 RUN cd /comfyui/custom_nodes && \
@@ -20,6 +20,8 @@ RUN cd /comfyui/custom_nodes && \
     git clone https://github.com/facok/ComfyUI-HunyuanVideoMultiLora.git && \
     cd ComfyUI-HunyuanVideoMultiLora && \
     pip install -r requirements.txt 2>/dev/null || true
+
+RUN pip install comfy-cli
 
 # Download Wan 2.2 UNET models (high and low lighting)
 RUN comfy model download \
@@ -42,7 +44,7 @@ RUN comfy model download \
 RUN comfy model download \
     --url https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors \
     --relative-path models/vae \
-    --filename wan_2.1_vae.safetensors
+    --filename wan_2.2_vae.safetensors
 
 # Optional: Copy static input files if you have a default image
 # Uncomment and place your example.png in an input/ folder next to the Dockerfile
