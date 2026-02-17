@@ -30,7 +30,7 @@ def get_history(prompt_id):
 
 def get_output_files(prompt_id, output_dir="/comfyui/output"):
     """Wait for and collect output files from ComfyUI"""
-    max_retries = 60
+    max_retries = 120
     retry_delay = 5
     
     for i in range(max_retries):
