@@ -1,6 +1,6 @@
 # Start from RunPod worker-comfyui base image
 # Replace <version> with the latest release from https://github.com/runpod-workers/worker-comfyui/releases
-FROM runpod/worker-comfyui:latest
+FROM runpod/worker-comfyui:5.5.1-base
 
 # Install required custom nodes
 RUN cd /comfyui/custom_nodes && \
