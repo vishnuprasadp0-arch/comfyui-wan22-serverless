@@ -1,12 +1,25 @@
 # Start from RunPod worker-comfyui base image
 # Replace <version> with the latest release from https://github.com/runpod-workers/worker-comfyui/releases
-FROM runpod/worker-comfyui:5.5.1-base
+FROM runpod/worker-comfyui:latest
 
 # Install required custom nodes
-RUN comfy-node-install ComfyUI-VideoHelperSuite \
-    && comfy-node-install https://github.com/AIFSH/ComfyUI-Wan \
-    && comfy-node-install rgthree-comfy \
-    && comfy-node-install ComfyUI_essentials
+RUN cd /comfyui/custom_nodes && \
+    # ComfyUI Essentials (ImageResize+, GetImageSize+)
+    git clone https://github.com/cubiq/ComfyUI_essentials.git && \
+    cd ComfyUI_essentials && \
+    pip install -r requirements.txt && \
+    cd .. && \
+    \
+    # rgthree-comfy (Seed node)
+    git clone https://github.com/rgthree/rgthree-comfy.git && \
+    cd rgthree-comfy && \
+    pip install -r requirements.txt && \
+    cd .. && \
+    \
+    # wanBlockSwap
+    git clone https://github.com/facok/ComfyUI-HunyuanVideoMultiLora.git && \
+    cd ComfyUI-HunyuanVideoMultiLora && \
+    pip install -r requirements.txt 2>/dev/null || true
 
 # Download Wan 2.2 UNET models (high and low lighting)
 RUN comfy model download \
