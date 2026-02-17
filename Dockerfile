@@ -21,30 +21,27 @@ RUN cd /comfyui/custom_nodes && \
     cd ComfyUI-HunyuanVideoMultiLora && \
     pip install -r requirements.txt 2>/dev/null || true
 
-RUN pip install comfy-cli
-
-# Download Wan 2.2 UNET models (high and low lighting)
-RUN comfy model download \
-    --url https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors \
-    --relative-path models/unet \
-    --filename Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors
-
-RUN comfy model download \
-    --url https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors \
-    --relative-path models/unet \
-    --filename Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors
-
-# Download CLIP model
-RUN comfy model download \
-    --url https://huggingface.co/NSFW-API/NSFW-Wan-UMT5-XXL/resolve/main/nsfw_wan_umt5-xxl_fp8_scaled.safetensors \
-    --relative-path models/clip \
-    --filename nsfw_wan_umt5-xxl_fp8_scaled.safetensors
-
-# Download VAE model
-RUN comfy model download \
-    --url https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors \
-    --relative-path models/vae \
-    --filename wan_2.2_vae.safetensors
+RUN pip install comfy-cli && \
+    # UNET High Lighting
+    comfy model download \
+        --url https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors \
+        --relative-path models/unet \
+        --filename Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors && \
+    # UNET Low Lighting
+    comfy model download \
+        --url https://huggingface.co/FX-FeiHou/wan2.2-Remix/resolve/main/NSFW/Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors \
+        --relative-path models/unet \
+        --filename Wan2.2_Remix_NSFW_i2v_14b_low_lighting_v2.0.safetensors && \
+    # CLIP
+    comfy model download \
+        --url https://huggingface.co/NSFW-API/NSFW-Wan-UMT5-XXL/resolve/main/nsfw_wan_umt5-xxl_fp8_scaled.safetensors \
+        --relative-path models/clip \
+        --filename nsfw_wan_umt5-xxl_fp8_scaled.safetensors && \
+    # VAE (Matched to Wan 2.2 name)
+    comfy model download \
+        --url https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors \
+        --relative-path models/vae \
+        --filename wan2.2_vae.safetensors
 
 # Optional: Copy static input files if you have a default image
 # Uncomment and place your example.png in an input/ folder next to the Dockerfile
